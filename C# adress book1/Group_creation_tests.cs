@@ -8,10 +8,10 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 
-namespace addressbook_add_group_test
+namespace addressbook_tests
 {
     [TestFixture]
-    public class UntitledTestCase
+    public class Group_creation_tests
     {
         private IWebDriver driver;
         private StringBuilder verificationErrors;
@@ -41,7 +41,7 @@ namespace addressbook_add_group_test
         }
 
         [Test]
-        public void TheUntitledTestCaseTest()
+        public void GroupCreationTest()
         {
             driver.Navigate().GoToUrl(baseURL);
             driver.FindElement(By.Name("user")).Click();
