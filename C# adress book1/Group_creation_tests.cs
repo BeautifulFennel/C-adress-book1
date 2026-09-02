@@ -22,7 +22,7 @@ namespace addressbook_tests
         public void SetupTest()
         {
             driver = new FirefoxDriver();
-            baseURL = "http://localhost/addressbook";
+            baseURL = "http://localhost/";
             verificationErrors = new StringBuilder();
         }
 
@@ -43,33 +43,84 @@ namespace addressbook_tests
         [Test]
         public void GroupCreationTest()
         {
-            // open home page
-            driver.Navigate().GoToUrl(baseURL);
+            GroupData group = new GroupData("new group")
+            {
+                Header = "new header",
+                Footer = "new footer"
+            };
 
-            // login
+            OpenHomePage();
+            Login("admin", "secret");
+            OpenGroupsPage();
+            InitGroupCreation();
+            FillGroupForm(group);
+            SubmitGroupCreation();
+            ReturnToGroupsPage();
+            Logout();
+        }
+
+        private void Login(string username, string password)
+        {
             driver.FindElement(By.Name("user")).Click();
             driver.FindElement(By.Name("user")).Clear();
-            driver.FindElement(By.Name("user")).SendKeys("admin");
+            driver.FindElement(By.Name("user")).SendKeys(username);
             driver.FindElement(By.Name("pass")).Click();
             driver.FindElement(By.Name("pass")).Clear();
-            driver.FindElement(By.Name("pass")).SendKeys("secret");
+            driver.FindElement(By.Name("pass")).SendKeys(password);
             driver.FindElement(By.XPath("//input[@value='Login']")).Click();
-
+        }
+        private void LoginAsUser()
+        {
+            driver.FindElement(By.Name("user")).Click();
+            driver.FindElement(By.Name("user")).Clear();
+            driver.FindElement(By.Name("user")).SendKeys("user");
+            driver.FindElement(By.Name("pass")).Click();
+            driver.FindElement(By.Name("pass")).Clear();
+            driver.FindElement(By.Name("pass")).SendKeys("qwerty");
+            driver.FindElement(By.XPath("//input[@value='Login']")).Click();
+        }
+        private void OpenGroupsPage()
+        {
             driver.FindElement(By.LinkText("groups")).Click();
             driver.Navigate().GoToUrl("http://localhost/addressbook/group.php");
+        }
+
+        private void InitGroupCreation()
+        {
             driver.FindElement(By.Name("new")).Click();
+        }
+
+        private void FillGroupForm(GroupData group)
+        {
             driver.FindElement(By.Name("group_name")).Click();
             driver.FindElement(By.Name("group_name")).Clear();
-            driver.FindElement(By.Name("group_name")).SendKeys("new 1");
+            driver.FindElement(By.Name("group_name")).SendKeys(group.Name);
             driver.FindElement(By.Name("group_header")).Click();
             driver.FindElement(By.Name("group_header")).Clear();
-            driver.FindElement(By.Name("group_header")).SendKeys("1");
+            driver.FindElement(By.Name("group_header")).SendKeys(group.Header);
             driver.FindElement(By.Name("group_footer")).Click();
             driver.FindElement(By.Name("group_footer")).Clear();
-            driver.FindElement(By.Name("group_footer")).SendKeys("1");
+            driver.FindElement(By.Name("group_footer")).SendKeys(group.Footer);
+        }
+
+        private void SubmitGroupCreation()
+        {
             driver.FindElement(By.Name("submit")).Click();
+        }
+
+        private void ReturnToGroupsPage()
+        {
             driver.FindElement(By.LinkText("group page")).Click();
+        }
+
+        private void Logout()
+        {
             driver.FindElement(By.LinkText("Logout")).Click();
+        }
+
+        private void OpenHomePage()
+        {
+            driver.Navigate().GoToUrl(baseURL + "/addressbook");
         }
 
         private bool IsElementPresent(By by)
