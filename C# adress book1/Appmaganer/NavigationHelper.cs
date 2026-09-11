@@ -6,7 +6,7 @@ namespace addressbook_tests
     {
         private readonly string baseUrl;
 
-        public NavigationHelper(IWebDriver driver, string baseUrl) : base(driver)
+        public NavigationHelper(ApplicationManager manager, string baseUrl) : base(manager)
         {
             this.baseUrl = baseUrl;
         }

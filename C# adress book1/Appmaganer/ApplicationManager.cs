@@ -12,11 +12,13 @@ namespace addressbook_tests
         public ApplicationManager()
         {
             driver = new FirefoxDriver();
-            Auth = new LoginHelper(driver);
-            Navigator = new NavigationHelper(driver, BaseUrl);
-            Groups = new GroupHelper(driver);
-            Contacts = new ContactHelper(driver);
+            Auth = new LoginHelper(this);
+            Navigator = new NavigationHelper(this, BaseUrl);
+            Groups = new GroupHelper(this);
+            Contacts = new ContactHelper(this);
         }
+
+        public IWebDriver Driver => driver;
 
         public LoginHelper Auth { get; }
 

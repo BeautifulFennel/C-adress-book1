@@ -14,14 +14,21 @@ namespace addressbook_tests
                 Footer = "new footer"
             };
 
-            app.Navigator.OpenHomePage();
-            app.Auth.Login("admin", "secret");
             app.Navigator.OpenGroupsPage();
-            app.Groups.InitGroupCreation();
-            app.Groups.FillGroupForm(group);
-            app.Groups.SubmitGroupCreation();
-            app.Navigator.ReturnToGroupsPage();
-            app.Auth.Logout();
+            app.Groups.Create(group);
+        }
+
+        [Test]
+        public void EmptyGroupCreationTest()
+        {
+            GroupData group = new GroupData("")
+            {
+                Header = "",
+                Footer = ""
+            };
+
+            app.Navigator.OpenGroupsPage();
+            app.Groups.Create(group);
         }
     }
 }

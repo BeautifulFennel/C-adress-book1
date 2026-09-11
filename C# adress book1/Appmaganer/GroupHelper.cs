@@ -4,8 +4,25 @@ namespace addressbook_tests
 {
     public class GroupHelper : HelperBase
     {
-        public GroupHelper(IWebDriver driver) : base(driver)
+        public GroupHelper(ApplicationManager manager) : base(manager)
         {
+        }
+
+        public GroupHelper Create(GroupData group)
+        {
+            InitGroupCreation();
+            FillGroupForm(group);
+            SubmitGroupCreation();
+            manager.Navigator.ReturnToGroupsPage();
+            return this;
+        }
+
+        public GroupHelper RemoveSelectedGroup()
+        {
+            SelectGroup();
+            RemoveSelectedGroups();
+            manager.Navigator.ReturnToGroupsPage();
+            return this;
         }
 
         public void InitGroupCreation()

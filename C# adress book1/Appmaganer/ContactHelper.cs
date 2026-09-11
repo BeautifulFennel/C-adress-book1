@@ -5,8 +5,17 @@ namespace addressbook_tests
 {
     public class ContactHelper : HelperBase
     {
-        public ContactHelper(IWebDriver driver) : base(driver)
+        public ContactHelper(ApplicationManager manager) : base(manager)
         {
+        }
+
+        public ContactHelper Create(ContactData contact)
+        {
+            InitContactCreation();
+            FillContactForm(contact);
+            SubmitContactCreation();
+            manager.Navigator.ReturnToHomePage();
+            return this;
         }
 
         public void InitContactCreation()

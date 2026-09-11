@@ -18,13 +18,7 @@ namespace addressbook_tests
                 BirthYear = "1990"
             };
 
-            app.Navigator.OpenHomePage();
-            app.Auth.Login("admin", "secret");
-            app.Contacts.InitContactCreation();
-            app.Contacts.FillContactForm(contact);
-            app.Contacts.SubmitContactCreation();
-            app.Navigator.ReturnToHomePage();
-            app.Auth.Logout();
+            app.Contacts.Create(contact);
         }
     }
 }
