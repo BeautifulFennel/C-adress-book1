@@ -9,7 +9,13 @@ namespace addressbook_tests
         public void TheDeletingAGroupTest()
         {
             app.Navigator.OpenGroupsPage();
-            app.Groups.RemoveSelectedGroup();
+
+            if (!app.Groups.IsThereAGroup())
+            {
+                app.Groups.Create(new GroupData("group for removal"));
+            }
+
+            app.Groups.Remove(0);
         }
     }
 }

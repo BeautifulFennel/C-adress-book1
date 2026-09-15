@@ -18,6 +18,33 @@ namespace addressbook_tests
             return this;
         }
 
+        public ContactHelper Modify(int index, ContactData contact)
+        {
+            InitContactModification(index);
+            FillContactForm(contact);
+            SubmitContactModification();
+            manager.Navigator.ReturnToHomePage();
+            return this;
+        }
+
+        public ContactHelper Remove(int index)
+        {
+            SelectContact(index);
+            RemoveSelectedContacts();
+
+            if (IsAlertPresent())
+            {
+                CloseAlertAndGetItsText();
+            }
+
+            return this;
+        }
+
+        public bool IsThereAContact()
+        {
+            return IsElementPresent(By.Name("selected[]"));
+        }
+
         public void InitContactCreation()
         {
             driver.FindElement(By.LinkText("add new")).Click();
@@ -52,6 +79,26 @@ namespace addressbook_tests
         public void SubmitContactCreation()
         {
             driver.FindElement(By.Name("submit")).Click();
+        }
+
+        public void InitContactModification(int index)
+        {
+            driver.FindElements(By.XPath("//img[@alt='Edit']"))[index].Click();
+        }
+
+        public void SubmitContactModification()
+        {
+            driver.FindElement(By.Name("update")).Click();
+        }
+
+        public void SelectContact(int index)
+        {
+            driver.FindElements(By.Name("selected[]"))[index].Click();
+        }
+
+        public void RemoveSelectedContacts()
+        {
+            driver.FindElement(By.Name("delete")).Click();
         }
     }
 }

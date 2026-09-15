@@ -21,7 +21,7 @@ namespace addressbook_tests
         [TearDown]
         public void TeardownTest()
         {
-            app.Stop();
+            app?.Stop();
             Assert.AreEqual("", verificationErrors.ToString());
         }
     }
