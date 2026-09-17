@@ -3,11 +3,13 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactRemovalTests : TestBase
+    public class ContactRemovalTests : AuthTestBase
     {
         [Test]
         public void ContactRemovalTest()
         {
+            app.Navigator.OpenHomePage();
+
             if (!app.Contacts.IsThereAContact())
             {
                 app.Contacts.Create(new ContactData("Contact", "For removal")

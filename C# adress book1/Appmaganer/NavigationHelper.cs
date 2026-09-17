@@ -13,11 +13,23 @@ namespace addressbook_tests
 
         public void OpenHomePage()
         {
+            if (driver.Url == baseUrl + "/addressbook/"
+                && IsElementPresent(By.Id("maintable")))
+            {
+                return;
+            }
+
             driver.Navigate().GoToUrl(baseUrl + "/addressbook/");
         }
 
         public void OpenGroupsPage()
         {
+            if (driver.Url == baseUrl + "/addressbook/group.php"
+                && IsElementPresent(By.Name("new")))
+            {
+                return;
+            }
+
             driver.FindElement(By.LinkText("groups")).Click();
         }
 

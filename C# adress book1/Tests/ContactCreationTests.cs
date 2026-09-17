@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactCreationTests : TestBase
+    public class ContactCreationTests : AuthTestBase
     {
         [Test]
         public void ContactCreationTest()
@@ -18,6 +18,7 @@ namespace addressbook_tests
                 BirthYear = "1990"
             };
 
+            app.Navigator.OpenHomePage();
             app.Contacts.Create(contact);
         }
     }

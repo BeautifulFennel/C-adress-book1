@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactModificationTests : TestBase
+    public class ContactModificationTests : AuthTestBase
     {
         [Test]
         public void ContactModificationTest()
@@ -17,6 +17,8 @@ namespace addressbook_tests
                 BirthMonth = "November",
                 BirthYear = "1991"
             };
+
+            app.Navigator.OpenHomePage();
 
             if (!app.Contacts.IsThereAContact())
             {

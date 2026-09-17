@@ -1,6 +1,4 @@
-using System.Text;
 using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
 
 namespace addressbook_tests
 {
@@ -8,21 +6,11 @@ namespace addressbook_tests
     {
         protected ApplicationManager app = null!;
 
-        private readonly StringBuilder verificationErrors = new StringBuilder();
-
         [SetUp]
         public void SetupTest()
         {
-            app = new ApplicationManager();
+            app = ApplicationManager.GetInstance();
             app.Navigator.OpenHomePage();
-            app.Auth.Login("admin", "secret");
-        }
-
-        [TearDown]
-        public void TeardownTest()
-        {
-            app?.Stop();
-            Assert.AreEqual("", verificationErrors.ToString());
         }
     }
 }
