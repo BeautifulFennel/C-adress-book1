@@ -19,7 +19,17 @@ namespace addressbook_tests
                 });
             }
 
-            app.Contacts.Remove(0);
+            const int index = 0;
+            List<ContactData> oldContacts = app.Contacts.GetContactList();
+
+            app.Contacts.Remove(index);
+
+            List<ContactData> newContacts = app.Contacts.GetContactList();
+            oldContacts.RemoveAt(index);
+            oldContacts.Sort();
+            newContacts.Sort();
+
+            NUnit.Framework.Assert.That(newContacts, Is.EqualTo(oldContacts));
         }
     }
 }

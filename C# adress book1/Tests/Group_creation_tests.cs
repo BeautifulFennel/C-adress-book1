@@ -15,7 +15,17 @@ namespace addressbook_tests
             };
 
             app.Navigator.OpenGroupsPage();
+
+            List<GroupData> oldGroups = app.Groups.GetGroupList();
+
             app.Groups.Create(group);
+
+            List<GroupData> newGroups = app.Groups.GetGroupList();
+            oldGroups.Add(group);
+            oldGroups.Sort();
+            newGroups.Sort();
+
+            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
         }
 
         [Test]
@@ -28,7 +38,17 @@ namespace addressbook_tests
             };
 
             app.Navigator.OpenGroupsPage();
+
+            List<GroupData> oldGroups = app.Groups.GetGroupList();
+
             app.Groups.Create(group);
+
+            List<GroupData> newGroups = app.Groups.GetGroupList();
+            oldGroups.Add(group);
+            oldGroups.Sort();
+            newGroups.Sort();
+
+            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
         }
     }
 }

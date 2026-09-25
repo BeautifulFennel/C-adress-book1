@@ -37,12 +37,30 @@ namespace addressbook_tests
                 CloseAlertAndGetItsText();
             }
 
+            manager.Navigator.OpenHomePage();
             return this;
         }
 
         public bool IsThereAContact()
         {
             return IsElementPresent(By.Name("selected[]"));
+        }
+
+        public List<ContactData> GetContactList()
+        {
+            List<ContactData> contacts = new List<ContactData>();
+
+            foreach (IWebElement row in driver.FindElements(By.Name("entry")))
+            {
+                IReadOnlyCollection<IWebElement> cells = row.FindElements(By.TagName("td"));
+                IWebElement[] cellArray = cells.ToArray();
+
+                contacts.Add(new ContactData(
+                    cellArray[2].Text,
+                    cellArray[1].Text));
+            }
+
+            return contacts;
         }
 
         public void InitContactCreation()

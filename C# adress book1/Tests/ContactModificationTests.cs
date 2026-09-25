@@ -29,7 +29,17 @@ namespace addressbook_tests
                 });
             }
 
-            app.Contacts.Modify(0, contact);
+            const int index = 0;
+            List<ContactData> oldContacts = app.Contacts.GetContactList();
+
+            app.Contacts.Modify(index, contact);
+
+            List<ContactData> newContacts = app.Contacts.GetContactList();
+            oldContacts[index] = contact;
+            oldContacts.Sort();
+            newContacts.Sort();
+
+            NUnit.Framework.Assert.That(newContacts, Is.EqualTo(oldContacts));
         }
     }
 }

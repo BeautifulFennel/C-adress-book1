@@ -40,6 +40,18 @@ namespace addressbook_tests
             return IsElementPresent(By.Name("selected[]"));
         }
 
+        public List<GroupData> GetGroupList()
+        {
+            List<GroupData> groups = new List<GroupData>();
+
+            foreach (IWebElement element in driver.FindElements(By.CssSelector("span.group")))
+            {
+                groups.Add(new GroupData(element.Text));
+            }
+
+            return groups;
+        }
+
         public void InitGroupCreation()
         {
             driver.FindElement(By.Name("new")).Click();

@@ -15,7 +15,17 @@ namespace addressbook_tests
                 app.Groups.Create(new GroupData("group for removal"));
             }
 
-            app.Groups.Remove(0);
+            const int index = 0;
+            List<GroupData> oldGroups = app.Groups.GetGroupList();
+
+            app.Groups.Remove(index);
+
+            List<GroupData> newGroups = app.Groups.GetGroupList();
+            oldGroups.RemoveAt(index);
+            oldGroups.Sort();
+            newGroups.Sort();
+
+            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
         }
     }
 }

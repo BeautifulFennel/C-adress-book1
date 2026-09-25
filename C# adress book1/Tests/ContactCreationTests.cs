@@ -19,7 +19,17 @@ namespace addressbook_tests
             };
 
             app.Navigator.OpenHomePage();
+
+            List<ContactData> oldContacts = app.Contacts.GetContactList();
+
             app.Contacts.Create(contact);
+
+            List<ContactData> newContacts = app.Contacts.GetContactList();
+            oldContacts.Add(contact);
+            oldContacts.Sort();
+            newContacts.Sort();
+
+            NUnit.Framework.Assert.That(newContacts, Is.EqualTo(oldContacts));
         }
     }
 }

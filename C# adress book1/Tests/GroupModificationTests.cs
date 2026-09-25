@@ -21,7 +21,17 @@ namespace addressbook_tests
                 app.Groups.Create(new GroupData("group for modification"));
             }
 
-            app.Groups.Modify(0, group);
+            const int index = 0;
+            List<GroupData> oldGroups = app.Groups.GetGroupList();
+
+            app.Groups.Modify(index, group);
+
+            List<GroupData> newGroups = app.Groups.GetGroupList();
+            oldGroups[index] = group;
+            oldGroups.Sort();
+            newGroups.Sort();
+
+            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
         }
     }
 }
