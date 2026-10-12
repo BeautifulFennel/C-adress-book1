@@ -5,6 +5,9 @@ namespace addressbook_tests
 {
     public class ContactHelper : HelperBase
     {
+        // Пустой список — действительный кеш; null — необходимость загрузки.
+        private List<ContactData>? contactCache = null;
+
         public ContactHelper(ApplicationManager manager) : base(manager)
         {
         }
@@ -46,21 +49,31 @@ namespace addressbook_tests
             return IsElementPresent(By.Name("selected[]"));
         }
 
+        public int GetContactCount()
+        {
+            return driver.FindElements(By.Name("selected[]")).Count;
+        }
+
         public List<ContactData> GetContactList()
         {
-            List<ContactData> contacts = new List<ContactData>();
-
-            foreach (IWebElement row in driver.FindElements(By.Name("entry")))
+            if (contactCache == null)
             {
-                IReadOnlyCollection<IWebElement> cells = row.FindElements(By.TagName("td"));
-                IWebElement[] cellArray = cells.ToArray();
+                contactCache = new List<ContactData>();
+                manager.Navigator.OpenHomePage();
 
-                contacts.Add(new ContactData(
-                    cellArray[2].Text,
-                    cellArray[1].Text));
+                foreach (IWebElement row in driver.FindElements(By.Name("entry")))
+                {
+                    IReadOnlyCollection<IWebElement> cells = row.FindElements(By.TagName("td"));
+                    IWebElement[] cellArray = cells.ToArray();
+
+                    contactCache.Add(new ContactData(
+                        cellArray[2].Text,
+                        cellArray[1].Text));
+                }
+
             }
 
-            return contacts;
+            return new List<ContactData>(contactCache);
         }
 
         public void InitContactCreation()
@@ -97,6 +110,7 @@ namespace addressbook_tests
         public void SubmitContactCreation()
         {
             driver.FindElement(By.Name("submit")).Click();
+            contactCache = null;
         }
 
         public void InitContactModification(int index)
@@ -107,6 +121,7 @@ namespace addressbook_tests
         public void SubmitContactModification()
         {
             driver.FindElement(By.Name("update")).Click();
+            contactCache = null;
         }
 
         public void SelectContact(int index)
@@ -117,6 +132,7 @@ namespace addressbook_tests
         public void RemoveSelectedContacts()
         {
             driver.FindElement(By.Name("delete")).Click();
+            contactCache = null;
         }
     }
 }

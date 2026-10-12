@@ -34,6 +34,8 @@ namespace addressbook_tests
 
             app.Contacts.Modify(index, contact);
 
+            NUnit.Framework.Assert.That(app.Contacts.GetContactCount(), Is.EqualTo(oldContacts.Count));
+
             List<ContactData> newContacts = app.Contacts.GetContactList();
             oldContacts[index] = contact;
             oldContacts.Sort();

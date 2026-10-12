@@ -24,6 +24,8 @@ namespace addressbook_tests
 
             app.Contacts.Remove(index);
 
+            NUnit.Framework.Assert.That(app.Contacts.GetContactCount(), Is.EqualTo(oldContacts.Count - 1));
+
             List<ContactData> newContacts = app.Contacts.GetContactList();
             oldContacts.RemoveAt(index);
             oldContacts.Sort();

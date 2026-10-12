@@ -20,6 +20,8 @@ namespace addressbook_tests
 
             app.Groups.Create(group);
 
+            NUnit.Framework.Assert.That(app.Groups.GetGroupCount(), Is.EqualTo(oldGroups.Count + 1));
+
             List<GroupData> newGroups = app.Groups.GetGroupList();
             oldGroups.Add(group);
             oldGroups.Sort();
@@ -42,6 +44,8 @@ namespace addressbook_tests
             List<GroupData> oldGroups = app.Groups.GetGroupList();
 
             app.Groups.Create(group);
+
+            NUnit.Framework.Assert.That(app.Groups.GetGroupCount(), Is.EqualTo(oldGroups.Count + 1));
 
             List<GroupData> newGroups = app.Groups.GetGroupList();
             oldGroups.Add(group);

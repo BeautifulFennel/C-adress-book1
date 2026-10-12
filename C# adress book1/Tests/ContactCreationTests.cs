@@ -24,6 +24,8 @@ namespace addressbook_tests
 
             app.Contacts.Create(contact);
 
+            NUnit.Framework.Assert.That(app.Contacts.GetContactCount(), Is.EqualTo(oldContacts.Count + 1));
+
             List<ContactData> newContacts = app.Contacts.GetContactList();
             oldContacts.Add(contact);
             oldContacts.Sort();

@@ -4,6 +4,9 @@ namespace addressbook_tests
 {
     public class GroupHelper : HelperBase
     {
+        // null означает, что список ещё не загружен или кеш сброшен.
+        private List<GroupData>? groupCache = null;
+
         public GroupHelper(ApplicationManager manager) : base(manager)
         {
         }
@@ -40,16 +43,29 @@ namespace addressbook_tests
             return IsElementPresent(By.Name("selected[]"));
         }
 
+        public int GetGroupCount()
+        {
+            return driver.FindElements(By.Name("selected[]")).Count;
+        }
+
         public List<GroupData> GetGroupList()
         {
-            List<GroupData> groups = new List<GroupData>();
-
-            foreach (IWebElement element in driver.FindElements(By.CssSelector("span.group")))
+            if (groupCache == null)
             {
-                groups.Add(new GroupData(element.Text));
+                groupCache = new List<GroupData>();
+                manager.Navigator.OpenGroupsPage();
+
+                foreach (IWebElement element in driver.FindElements(By.CssSelector("span.group")))
+                {
+                    groupCache.Add(new GroupData(element.Text)
+                    {
+                        Id = element.FindElement(By.TagName("input")).GetAttribute("value")
+                    });
+                }
             }
 
-            return groups;
+            // Копия списка позволяет тесту выполнять Add, RemoveAt и Sort.
+            return new List<GroupData>(groupCache);
         }
 
         public void InitGroupCreation()
@@ -73,6 +89,7 @@ namespace addressbook_tests
         public void SubmitGroupCreation()
         {
             driver.FindElement(By.Name("submit")).Click();
+            groupCache = null;
         }
 
         public void SelectGroup(int index)
@@ -88,11 +105,13 @@ namespace addressbook_tests
         public void SubmitGroupModification()
         {
             driver.FindElement(By.Name("update")).Click();
+            groupCache = null;
         }
 
         public void RemoveSelectedGroups()
         {
             driver.FindElement(By.Name("delete")).Click();
+            groupCache = null;
         }
     }
 }

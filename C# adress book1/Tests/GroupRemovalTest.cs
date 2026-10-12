@@ -20,6 +20,8 @@ namespace addressbook_tests
 
             app.Groups.Remove(index);
 
+            NUnit.Framework.Assert.That(app.Groups.GetGroupCount(), Is.EqualTo(oldGroups.Count - 1));
+
             List<GroupData> newGroups = app.Groups.GetGroupList();
             oldGroups.RemoveAt(index);
             oldGroups.Sort();
