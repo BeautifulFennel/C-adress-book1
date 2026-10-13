@@ -5,15 +5,24 @@ namespace addressbook_tests
     [TestFixture]
     public class Group_creation_tests : AuthTestBase
     {
-        [Test]
-        public void GroupCreationTest()
+        public static IEnumerable<GroupData> RandomDataProvider()
         {
-            GroupData group = new GroupData("new group")
+            List<GroupData> groups = new List<GroupData>();
+            for (int i = 0; i < 5; i++)
             {
-                Header = "new header",
-                Footer = "new footer"
-            };
+                groups.Add(new GroupData(GenerateRandomString(30))
+                {
+                    Header = GenerateRandomString(100),
+                    Footer = GenerateRandomString(100)
+                });
+            }
 
+            return groups;
+        }
+
+        [TestCaseSource(nameof(RandomDataProvider))]
+        public void GroupCreationTest(GroupData group)
+        {
             app.Navigator.OpenGroupsPage();
 
             List<GroupData> oldGroups = app.Groups.GetGroupList();
