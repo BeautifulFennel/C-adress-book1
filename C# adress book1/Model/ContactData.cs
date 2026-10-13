@@ -2,6 +2,9 @@ namespace addressbook_tests
 {
     public class ContactData : IEquatable<ContactData>, IComparable<ContactData>
     {
+        private string? allPhones;
+        private string? allEmails;
+
         public ContactData(string firstName, string lastName)
         {
             FirstName = firstName;
@@ -16,7 +19,55 @@ namespace addressbook_tests
 
         public string Company { get; set; } = "";
 
+        public string Address { get; set; } = "";
+
+        public string HomePhone { get; set; } = "";
+
+        public string MobilePhone { get; set; } = "";
+
+        public string WorkPhone { get; set; } = "";
+
         public string Email { get; set; } = "";
+
+        public string Email2 { get; set; } = "";
+
+        public string Email3 { get; set; } = "";
+
+        // Из таблицы получаем готовую строку, из формы — собираем её из отдельных полей.
+        public string AllPhones
+        {
+            get
+            {
+                return allPhones ?? string.Join("\n",
+                    new[] { HomePhone, MobilePhone, WorkPhone }
+                        .Select(CleanUpPhone)
+                        .Where(phone => !string.IsNullOrEmpty(phone)));
+            }
+            set { allPhones = value; }
+        }
+
+        public string AllEmails
+        {
+            get
+            {
+                return allEmails ?? string.Join("\n",
+                    new[] { Email, Email2, Email3 }
+                        .Where(email => !string.IsNullOrEmpty(email)));
+            }
+            set { allEmails = value; }
+        }
+
+        private static string CleanUpPhone(string? phone)
+        {
+            if (string.IsNullOrEmpty(phone))
+            {
+                return "";
+            }
+
+            return phone.Replace(" ", "").Replace("-", "")
+                .Replace("(", "").Replace(")", "")
+                .Replace(".", "").Replace("/", "").Replace("'", "");
+        }
 
         public string BirthDay { get; set; } = "";
 

@@ -76,6 +76,45 @@ namespace addressbook_tests
             return new List<ContactData>(contactCache);
         }
 
+        public ContactData GetContactInformationFromTable(int index)
+        {
+            manager.Navigator.OpenHomePage();
+            IWebElement row = driver.FindElements(By.Name("entry"))[index];
+            IWebElement[] cells = row.FindElements(By.TagName("td")).ToArray();
+
+            return new ContactData(cells[2].Text, cells[1].Text)
+            {
+                Address = NormalizeLineEndings(cells[3].Text),
+                AllEmails = NormalizeLineEndings(cells[4].Text),
+                AllPhones = NormalizeLineEndings(cells[5].Text)
+            };
+        }
+
+        public ContactData GetContactInformationFromEditForm(int index)
+        {
+            manager.Navigator.OpenHomePage();
+            InitContactModification(index);
+
+            return new ContactData(
+                driver.FindElement(By.Name("firstname")).GetAttribute("value") ?? "",
+                driver.FindElement(By.Name("lastname")).GetAttribute("value") ?? "")
+            {
+                Address = NormalizeLineEndings(
+                    driver.FindElement(By.Name("address")).GetAttribute("value") ?? ""),
+                HomePhone = driver.FindElement(By.Name("home")).GetAttribute("value") ?? "",
+                MobilePhone = driver.FindElement(By.Name("mobile")).GetAttribute("value") ?? "",
+                WorkPhone = driver.FindElement(By.Name("work")).GetAttribute("value") ?? "",
+                Email = driver.FindElement(By.Name("email")).GetAttribute("value") ?? "",
+                Email2 = driver.FindElement(By.Name("email2")).GetAttribute("value") ?? "",
+                Email3 = driver.FindElement(By.Name("email3")).GetAttribute("value") ?? ""
+            };
+        }
+
+        private static string NormalizeLineEndings(string text)
+        {
+            return text.Replace("\r\n", "\n");
+        }
+
         public void InitContactCreation()
         {
             driver.FindElement(By.LinkText("add new")).Click();
@@ -95,9 +134,27 @@ namespace addressbook_tests
             driver.FindElement(By.Name("company")).Click();
             driver.FindElement(By.Name("company")).Clear();
             driver.FindElement(By.Name("company")).SendKeys(contact.Company);
+            driver.FindElement(By.Name("address")).Click();
+            driver.FindElement(By.Name("address")).Clear();
+            driver.FindElement(By.Name("address")).SendKeys(contact.Address);
+            driver.FindElement(By.Name("home")).Click();
+            driver.FindElement(By.Name("home")).Clear();
+            driver.FindElement(By.Name("home")).SendKeys(contact.HomePhone);
+            driver.FindElement(By.Name("mobile")).Click();
+            driver.FindElement(By.Name("mobile")).Clear();
+            driver.FindElement(By.Name("mobile")).SendKeys(contact.MobilePhone);
+            driver.FindElement(By.Name("work")).Click();
+            driver.FindElement(By.Name("work")).Clear();
+            driver.FindElement(By.Name("work")).SendKeys(contact.WorkPhone);
             driver.FindElement(By.Name("email")).Click();
             driver.FindElement(By.Name("email")).Clear();
             driver.FindElement(By.Name("email")).SendKeys(contact.Email);
+            driver.FindElement(By.Name("email2")).Click();
+            driver.FindElement(By.Name("email2")).Clear();
+            driver.FindElement(By.Name("email2")).SendKeys(contact.Email2);
+            driver.FindElement(By.Name("email3")).Click();
+            driver.FindElement(By.Name("email3")).Clear();
+            driver.FindElement(By.Name("email3")).SendKeys(contact.Email3);
             driver.FindElement(By.Name("bday")).Click();
             new SelectElement(driver.FindElement(By.Name("bday"))).SelectByText(contact.BirthDay);
             driver.FindElement(By.Name("bmonth")).Click();
@@ -115,7 +172,8 @@ namespace addressbook_tests
 
         public void InitContactModification(int index)
         {
-            driver.FindElements(By.XPath("//img[@alt='Edit']"))[index].Click();
+            driver.FindElements(By.Name("entry"))[index]
+                .FindElement(By.XPath(".//img[@alt='Edit']")).Click();
         }
 
         public void SubmitContactModification()
