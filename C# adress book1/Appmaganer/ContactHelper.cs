@@ -99,6 +99,10 @@ namespace addressbook_tests
                 driver.FindElement(By.Name("firstname")).GetAttribute("value") ?? "",
                 driver.FindElement(By.Name("lastname")).GetAttribute("value") ?? "")
             {
+                MiddleName = driver.FindElement(By.Name("middlename")).GetAttribute("value") ?? "",
+                Nickname = driver.FindElement(By.Name("nickname")).GetAttribute("value") ?? "",
+                Title = driver.FindElement(By.Name("title")).GetAttribute("value") ?? "",
+                Company = driver.FindElement(By.Name("company")).GetAttribute("value") ?? "",
                 Address = NormalizeLineEndings(
                     driver.FindElement(By.Name("address")).GetAttribute("value") ?? ""),
                 HomePhone = driver.FindElement(By.Name("home")).GetAttribute("value") ?? "",
@@ -106,8 +110,25 @@ namespace addressbook_tests
                 WorkPhone = driver.FindElement(By.Name("work")).GetAttribute("value") ?? "",
                 Email = driver.FindElement(By.Name("email")).GetAttribute("value") ?? "",
                 Email2 = driver.FindElement(By.Name("email2")).GetAttribute("value") ?? "",
-                Email3 = driver.FindElement(By.Name("email3")).GetAttribute("value") ?? ""
+                Email3 = driver.FindElement(By.Name("email3")).GetAttribute("value") ?? "",
+                Homepage = driver.FindElement(By.Name("homepage")).GetAttribute("value") ?? "",
+                BirthDay = new SelectElement(driver.FindElement(By.Name("bday"))).SelectedOption.Text,
+                BirthMonth = new SelectElement(driver.FindElement(By.Name("bmonth"))).SelectedOption.Text,
+                BirthYear = driver.FindElement(By.Name("byear")).GetAttribute("value") ?? "",
+                AnniversaryDay = new SelectElement(driver.FindElement(By.Name("aday"))).SelectedOption.Text,
+                AnniversaryMonth = new SelectElement(driver.FindElement(By.Name("amonth"))).SelectedOption.Text,
+                AnniversaryYear = driver.FindElement(By.Name("ayear")).GetAttribute("value") ?? ""
             };
+        }
+
+        public string GetContactInformationFromDetails(int index)
+        {
+            manager.Navigator.OpenHomePage();
+            IWebElement[] cells = driver.FindElements(By.Name("entry"))[index]
+                .FindElements(By.TagName("td")).ToArray();
+            cells[6].FindElement(By.TagName("a")).Click();
+
+            return NormalizeLineEndings(driver.FindElement(By.Id("content")).Text);
         }
 
         private static string NormalizeLineEndings(string text)
@@ -131,6 +152,10 @@ namespace addressbook_tests
             driver.FindElement(By.Name("lastname")).Click();
             driver.FindElement(By.Name("lastname")).Clear();
             driver.FindElement(By.Name("lastname")).SendKeys(contact.LastName);
+            driver.FindElement(By.Name("nickname")).Clear();
+            driver.FindElement(By.Name("nickname")).SendKeys(contact.Nickname);
+            driver.FindElement(By.Name("title")).Clear();
+            driver.FindElement(By.Name("title")).SendKeys(contact.Title);
             driver.FindElement(By.Name("company")).Click();
             driver.FindElement(By.Name("company")).Clear();
             driver.FindElement(By.Name("company")).SendKeys(contact.Company);
@@ -155,6 +180,8 @@ namespace addressbook_tests
             driver.FindElement(By.Name("email3")).Click();
             driver.FindElement(By.Name("email3")).Clear();
             driver.FindElement(By.Name("email3")).SendKeys(contact.Email3);
+            driver.FindElement(By.Name("homepage")).Clear();
+            driver.FindElement(By.Name("homepage")).SendKeys(contact.Homepage);
             driver.FindElement(By.Name("bday")).Click();
             new SelectElement(driver.FindElement(By.Name("bday"))).SelectByText(contact.BirthDay);
             driver.FindElement(By.Name("bmonth")).Click();
@@ -162,6 +189,10 @@ namespace addressbook_tests
             driver.FindElement(By.Name("byear")).Click();
             driver.FindElement(By.Name("byear")).Clear();
             driver.FindElement(By.Name("byear")).SendKeys(contact.BirthYear);
+            new SelectElement(driver.FindElement(By.Name("aday"))).SelectByText(contact.AnniversaryDay);
+            new SelectElement(driver.FindElement(By.Name("amonth"))).SelectByText(contact.AnniversaryMonth);
+            driver.FindElement(By.Name("ayear")).Clear();
+            driver.FindElement(By.Name("ayear")).SendKeys(contact.AnniversaryYear);
         }
 
         public void SubmitContactCreation()
@@ -172,8 +203,9 @@ namespace addressbook_tests
 
         public void InitContactModification(int index)
         {
-            driver.FindElements(By.Name("entry"))[index]
-                .FindElement(By.XPath(".//img[@alt='Edit']")).Click();
+            IWebElement[] cells = driver.FindElements(By.Name("entry"))[index]
+                .FindElements(By.TagName("td")).ToArray();
+            cells[7].FindElement(By.TagName("a")).Click();
         }
 
         public void SubmitContactModification()

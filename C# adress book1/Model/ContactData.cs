@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace addressbook_tests
 {
     public class ContactData : IEquatable<ContactData>, IComparable<ContactData>
@@ -17,6 +19,10 @@ namespace addressbook_tests
 
         public string LastName { get; set; }
 
+        public string Nickname { get; set; } = "";
+
+        public string Title { get; set; } = "";
+
         public string Company { get; set; } = "";
 
         public string Address { get; set; } = "";
@@ -32,6 +38,8 @@ namespace addressbook_tests
         public string Email2 { get; set; } = "";
 
         public string Email3 { get; set; } = "";
+
+        public string Homepage { get; set; } = "";
 
         // Из таблицы получаем готовую строку, из формы — собираем её из отдельных полей.
         public string AllPhones
@@ -69,11 +77,76 @@ namespace addressbook_tests
                 .Replace(".", "").Replace("/", "").Replace("'", "");
         }
 
-        public string BirthDay { get; set; } = "";
+        public string BirthDay { get; set; } = "-";
 
-        public string BirthMonth { get; set; } = "";
+        public string BirthMonth { get; set; } = "-";
 
         public string BirthYear { get; set; } = "";
+
+        public string AnniversaryDay { get; set; } = "-";
+
+        public string AnniversaryMonth { get; set; } = "-";
+
+        public string AnniversaryYear { get; set; } = "";
+
+        // Обратная проверка: собираем текст страницы свойств из отдельных полей формы.
+        public string GetAllDetails(DateTime today)
+        {
+            return string.Join("\n", new[]
+            {
+                string.Join(" ", new[] { FirstName, MiddleName, LastName }
+                    .Where(value => !string.IsNullOrEmpty(value))),
+                Nickname,
+                Title,
+                Company,
+                Address.Trim(),
+                FormatPhone(HomePhone, "H:"),
+                FormatPhone(MobilePhone, "M:"),
+                FormatPhone(WorkPhone, "W:"),
+                Email,
+                Email2,
+                Email3,
+                string.IsNullOrEmpty(Homepage) ? "" : "Homepage: "
+                    + Homepage.Replace("https://", "").Replace("http://", ""),
+                FormatDate("Birthday", BirthDay, BirthMonth, BirthYear, today),
+                FormatDate("Anniversary", AnniversaryDay, AnniversaryMonth, AnniversaryYear, today)
+            }.Where(value => !string.IsNullOrEmpty(value)));
+        }
+
+        private static string FormatPhone(string phone, string label)
+        {
+            return string.IsNullOrEmpty(phone) ? "" : label + " " + phone;
+        }
+
+        private static string FormatDate(string label, string day, string month, string year, DateTime today)
+        {
+            int.TryParse(day, out int dayNumber);
+            string monthName = string.IsNullOrEmpty(month) || month == "-" ? "" : month;
+            string date = (dayNumber > 0 ? dayNumber + ". " : "") + monthName
+                + (string.IsNullOrEmpty(year) ? "" : " " + year);
+
+            if (string.IsNullOrWhiteSpace(date))
+            {
+                return "";
+            }
+
+            if (int.TryParse(year, out int yearNumber) && yearNumber >= 1800 && yearNumber <= 2200)
+            {
+                int monthNumber = Array.IndexOf(CultureInfo.InvariantCulture.DateTimeFormat.MonthNames, month) + 1;
+                int age = today.Year - yearNumber;
+                if (today.Month < monthNumber || (today.Month == monthNumber && today.Day < dayNumber))
+                {
+                    age--;
+                }
+
+                if (age != -1 && age < 150)
+                {
+                    date += " (" + age + ")";
+                }
+            }
+
+            return label + " " + date.Trim();
+        }
 
         public bool Equals(ContactData? other)
         {
