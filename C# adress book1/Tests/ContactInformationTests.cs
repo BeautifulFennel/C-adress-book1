@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System.Text.RegularExpressions;
 
 namespace addressbook_tests
 {
@@ -44,14 +43,8 @@ namespace addressbook_tests
 
             // Собираем ожидаемый блок из формы, а не разбираем текст страницы на поля.
             string expectedDetails = fromForm.GetAllDetails(DateTime.Today);
-            NUnit.Framework.Assert.That(NormalizeWhitespace(fromDetails),
-                Is.EqualTo(NormalizeWhitespace(expectedDetails)), "Детальная информация о контакте");
-        }
-
-        private static string NormalizeWhitespace(string text)
-        {
-            // WebDriver может добавлять переносы около ссылок и меток; сравниваем содержимое блока.
-            return Regex.Replace(text, @"\s+", " ").Trim();
+            NUnit.Framework.Assert.That(fromDetails,
+                Is.EqualTo(expectedDetails), "Детальная информация о контакте, включая пробелы и переносы строк");
         }
 
         [Test]

@@ -30,9 +30,9 @@ namespace addressbook_tests
                 AnniversaryYear = "2010"
             };
 
-            string expected = "First Middle Last\nTester\nEngineer\nCompany\nStreet, 1\nCity\n"
-                + "H: +7 (383) 123-45-67\nM: 222\nW: 333\n"
-                + "same@example.com\nsame@example.com\nother@example.com\nHomepage: example.com\n"
+            string expected = "First Middle Last\nTester\nEngineer\nCompany\nStreet, 1\nCity\n\n"
+                + "H: +7 (383) 123-45-67\nM: 222\nW: 333\n\n"
+                + "same@example.com\nsame@example.com\nother@example.com\nHomepage:\nexample.com\n\n"
                 + "Birthday 17. November 1991 (34)\nAnniversary 1. January 2010 (16)";
 
             NUnit.Framework.Assert.That(contact.GetAllDetails(new DateTime(2026, 10, 13)), Is.EqualTo(expected));
@@ -68,8 +68,35 @@ namespace addressbook_tests
                 BirthYear = year
             };
 
-            string expected = "First Last" + (expectedDate == "" ? "" : "\n" + expectedDate);
+            string expected = "First Last" + (expectedDate == "" ? "" : "\n\n" + expectedDate);
             NUnit.Framework.Assert.That(contact.GetAllDetails(new DateTime(2026, 10, 13)), Is.EqualTo(expected));
+        }
+
+        [TestCase("111", "", "First Last\n\nH: 111")]
+        [TestCase("", "two@example.com", "First Last\n\ntwo@example.com")]
+        [TestCase("111", "two@example.com", "First Last\n\nH: 111\n\ntwo@example.com")]
+        public void DetailsSeparateNonEmptyBlocks(string homePhone, string email2, string expected)
+        {
+            ContactData contact = new ContactData("First", "Last")
+            {
+                HomePhone = homePhone,
+                Email2 = email2
+            };
+
+            NUnit.Framework.Assert.That(contact.GetAllDetails(new DateTime(2026, 10, 13)), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void DetailsPreserveSpacesAndEmptyLinesInsideAddress()
+        {
+            ContactData contact = new ContactData("First", "Last")
+            {
+                Company = "Test company",
+                Address = "Test street, 1\n\nBuilding 2\nCity"
+            };
+
+            NUnit.Framework.Assert.That(contact.GetAllDetails(new DateTime(2026, 10, 13)), Is.EqualTo(
+                "First Last\nTest company\nTest street, 1\n\nBuilding 2\nCity"));
         }
 
         [TestCase("", "", "", "")]

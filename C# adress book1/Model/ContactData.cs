@@ -92,25 +92,38 @@ namespace addressbook_tests
         // Обратная проверка: собираем текст страницы свойств из отдельных полей формы.
         public string GetAllDetails(DateTime today)
         {
-            return string.Join("\n", new[]
-            {
+            string personalInformation = JoinLines(
                 string.Join(" ", new[] { FirstName, MiddleName, LastName }
                     .Where(value => !string.IsNullOrEmpty(value))),
                 Nickname,
                 Title,
                 Company,
-                Address.Trim(),
+                Address.Trim());
+
+            string phones = JoinLines(
                 FormatPhone(HomePhone, "H:"),
                 FormatPhone(MobilePhone, "M:"),
-                FormatPhone(WorkPhone, "W:"),
+                FormatPhone(WorkPhone, "W:"));
+
+            string emails = JoinLines(
                 Email,
                 Email2,
                 Email3,
-                string.IsNullOrEmpty(Homepage) ? "" : "Homepage: "
-                    + Homepage.Replace("https://", "").Replace("http://", ""),
+                string.IsNullOrEmpty(Homepage) ? "" : "Homepage:\n"
+                    + Homepage.Replace("https://", "").Replace("http://", ""));
+
+            string dates = JoinLines(
                 FormatDate("Birthday", BirthDay, BirthMonth, BirthYear, today),
-                FormatDate("Anniversary", AnniversaryDay, AnniversaryMonth, AnniversaryYear, today)
-            }.Where(value => !string.IsNullOrEmpty(value)));
+                FormatDate("Anniversary", AnniversaryDay, AnniversaryMonth, AnniversaryYear, today));
+
+            // В браузере непустые блоки разделены пустой строкой.
+            return string.Join("\n\n", new[] { personalInformation, phones, emails, dates }
+                .Where(value => !string.IsNullOrEmpty(value)));
+        }
+
+        private static string JoinLines(params string[] lines)
+        {
+            return string.Join("\n", lines.Where(line => !string.IsNullOrEmpty(line)));
         }
 
         private static string FormatPhone(string phone, string label)
