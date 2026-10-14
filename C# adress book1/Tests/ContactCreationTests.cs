@@ -1,47 +1,31 @@
 using NUnit.Framework;
-using System.Globalization;
+using System.Text.Json;
+using System.Xml.Serialization;
 
 namespace addressbook_tests
 {
     [TestFixture]
     public class ContactCreationTests : AuthTestBase
     {
-        public static IEnumerable<ContactData> RandomDataProvider()
+        public static IEnumerable<ContactData> ContactDataFromXmlFile()
         {
-            List<ContactData> contacts = new List<ContactData>();
-            for (int i = 0; i < 5; i++)
-            {
-                // Первые 28 дней существуют в любом месяце, в том числе в феврале.
-                DateTime birthday = new DateTime(rnd.Next(1950, 2011), rnd.Next(1, 13), rnd.Next(1, 29));
-                DateTime anniversary = new DateTime(rnd.Next(2011, 2026), rnd.Next(1, 13), rnd.Next(1, 29));
+            string fileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "contacts.xml");
+            using StreamReader reader = new StreamReader(fileName);
 
-                contacts.Add(new ContactData(GenerateRandomString(30), GenerateRandomString(30))
-                {
-                    MiddleName = GenerateRandomString(30),
-                    Nickname = GenerateRandomString(30),
-                    Title = GenerateRandomString(30),
-                    Company = GenerateRandomString(50),
-                    Address = GenerateRandomString(100),
-                    HomePhone = rnd.Next(1000000, 10000000).ToString(CultureInfo.InvariantCulture),
-                    MobilePhone = rnd.Next(1000000, 10000000).ToString(CultureInfo.InvariantCulture),
-                    WorkPhone = rnd.Next(1000000, 10000000).ToString(CultureInfo.InvariantCulture),
-                    Email = "user" + GenerateRandomString(20) + "@example.com",
-                    Email2 = "user" + GenerateRandomString(20) + "@example.com",
-                    Email3 = "user" + GenerateRandomString(20) + "@example.com",
-                    Homepage = "https://site" + GenerateRandomString(20) + ".example.com",
-                    BirthDay = birthday.ToString("%d", CultureInfo.InvariantCulture),
-                    BirthMonth = birthday.ToString("MMMM", CultureInfo.InvariantCulture),
-                    BirthYear = birthday.ToString("yyyy", CultureInfo.InvariantCulture),
-                    AnniversaryDay = anniversary.ToString("%d", CultureInfo.InvariantCulture),
-                    AnniversaryMonth = anniversary.ToString("MMMM", CultureInfo.InvariantCulture),
-                    AnniversaryYear = anniversary.ToString("yyyy", CultureInfo.InvariantCulture)
-                });
-            }
-
-            return contacts;
+            return (List<ContactData>?)new XmlSerializer(typeof(List<ContactData>)).Deserialize(reader)
+                ?? throw new InvalidDataException($"Файл '{fileName}' не содержит список контактов.");
         }
 
-        [TestCaseSource(nameof(RandomDataProvider))]
+        public static IEnumerable<ContactData> ContactDataFromJsonFile()
+        {
+            string fileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "contacts.json");
+
+            return JsonSerializer.Deserialize<List<ContactData>>(File.ReadAllText(fileName))
+                ?? throw new InvalidDataException($"Файл '{fileName}' не содержит список контактов.");
+        }
+
+        [TestCaseSource(nameof(ContactDataFromXmlFile), Category = "XML")]
+        [TestCaseSource(nameof(ContactDataFromJsonFile), Category = "JSON")]
         public void ContactCreationTest(ContactData contact)
         {
             app.Navigator.OpenHomePage();

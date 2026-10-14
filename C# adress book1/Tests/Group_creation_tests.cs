@@ -1,26 +1,31 @@
 using NUnit.Framework;
+using System.Text.Json;
+using System.Xml.Serialization;
 
 namespace addressbook_tests
 {
     [TestFixture]
     public class Group_creation_tests : AuthTestBase
     {
-        public static IEnumerable<GroupData> RandomDataProvider()
+        public static IEnumerable<GroupData> GroupDataFromXmlFile()
         {
-            List<GroupData> groups = new List<GroupData>();
-            for (int i = 0; i < 5; i++)
-            {
-                groups.Add(new GroupData(GenerateRandomString(30))
-                {
-                    Header = GenerateRandomString(100),
-                    Footer = GenerateRandomString(100)
-                });
-            }
+            string fileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "groups.xml");
+            using StreamReader reader = new StreamReader(fileName);
 
-            return groups;
+            return (List<GroupData>?)new XmlSerializer(typeof(List<GroupData>)).Deserialize(reader)
+                ?? throw new InvalidDataException($"Файл '{fileName}' не содержит список групп.");
         }
 
-        [TestCaseSource(nameof(RandomDataProvider))]
+        public static IEnumerable<GroupData> GroupDataFromJsonFile()
+        {
+            string fileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "groups.json");
+
+            return JsonSerializer.Deserialize<List<GroupData>>(File.ReadAllText(fileName))
+                ?? throw new InvalidDataException($"Файл '{fileName}' не содержит список групп.");
+        }
+
+        [TestCaseSource(nameof(GroupDataFromXmlFile), Category = "XML")]
+        [TestCaseSource(nameof(GroupDataFromJsonFile), Category = "JSON")]
         public void GroupCreationTest(GroupData group)
         {
             app.Navigator.OpenGroupsPage();

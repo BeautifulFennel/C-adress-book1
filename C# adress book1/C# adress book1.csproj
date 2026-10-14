@@ -23,4 +23,11 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Данные созданы генератором №14. NUnit ищет их рядом с тестовой сборкой. -->
+    <None Include="../TestData/*.xml;../TestData/*.json"
+          Link="TestData/%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
