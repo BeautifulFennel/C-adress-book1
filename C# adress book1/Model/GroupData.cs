@@ -2,6 +2,11 @@ namespace addressbook_tests
 {
     public class GroupData : IEquatable<GroupData>, IComparable<GroupData>
     {
+        // XmlSerializer создаёт объект через конструктор без параметров.
+        public GroupData() : this("")
+        {
+        }
+
         public GroupData(string name)
         {
             Name = name;

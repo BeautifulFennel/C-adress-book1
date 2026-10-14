@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace addressbook_tests
 {
@@ -6,6 +8,11 @@ namespace addressbook_tests
     {
         private string? allPhones;
         private string? allEmails;
+
+        // XmlSerializer создаёт объект через конструктор без параметров.
+        public ContactData() : this("", "")
+        {
+        }
 
         public ContactData(string firstName, string lastName)
         {
@@ -42,6 +49,9 @@ namespace addressbook_tests
         public string Homepage { get; set; } = "";
 
         // Из таблицы получаем готовую строку, из формы — собираем её из отдельных полей.
+        // В файле достаточно отдельных телефонов: сводное поле вычисляется из них.
+        [JsonIgnore]
+        [XmlIgnore]
         public string AllPhones
         {
             get
@@ -54,6 +64,8 @@ namespace addressbook_tests
             set { allPhones = value; }
         }
 
+        [JsonIgnore]
+        [XmlIgnore]
         public string AllEmails
         {
             get
