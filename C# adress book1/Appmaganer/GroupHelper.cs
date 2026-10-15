@@ -30,9 +30,29 @@ namespace addressbook_tests
             return this;
         }
 
+        public GroupHelper Modify(string id, GroupData group)
+        {
+            manager.Navigator.OpenGroupsPage();
+            SelectGroup(id);
+            InitGroupModification();
+            FillGroupForm(group);
+            SubmitGroupModification();
+            manager.Navigator.ReturnToGroupsPage();
+            return this;
+        }
+
         public GroupHelper Remove(int index)
         {
             SelectGroup(index);
+            RemoveSelectedGroups();
+            manager.Navigator.ReturnToGroupsPage();
+            return this;
+        }
+
+        public GroupHelper Remove(string id)
+        {
+            manager.Navigator.OpenGroupsPage();
+            SelectGroup(id);
             RemoveSelectedGroups();
             manager.Navigator.ReturnToGroupsPage();
             return this;
@@ -48,8 +68,15 @@ namespace addressbook_tests
             return driver.FindElements(By.Name("selected[]")).Count;
         }
 
-        public List<GroupData> GetGroupList()
+        public List<GroupData> GetGroupList(bool forceReload = false)
         {
+            if (forceReload)
+            {
+                groupCache = null;
+                manager.Navigator.OpenGroupsPage();
+                driver.Navigate().Refresh();
+            }
+
             if (groupCache == null)
             {
                 groupCache = new List<GroupData>();
@@ -97,9 +124,15 @@ namespace addressbook_tests
             driver.FindElements(By.Name("selected[]"))[index].Click();
         }
 
+        public void SelectGroup(string id)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(id);
+            ClickInView(driver.FindElement(By.CssSelector($"input[name='selected[]'][value='{id}']")));
+        }
+
         public void InitGroupModification()
         {
-            driver.FindElement(By.Name("edit")).Click();
+            ClickInView(driver.FindElement(By.Name("edit")));
         }
 
         public void SubmitGroupModification()
@@ -110,7 +143,7 @@ namespace addressbook_tests
 
         public void RemoveSelectedGroups()
         {
-            driver.FindElement(By.Name("delete")).Click();
+            ClickInView(driver.FindElement(By.Name("delete")));
             groupCache = null;
         }
     }

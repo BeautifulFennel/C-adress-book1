@@ -6,6 +6,7 @@ namespace addressbook_tests
     public class TestBase
     {
         protected ApplicationManager app = null!;
+        protected static bool PERFORM_LONG_UI_CHECKS => TestConfiguration.PerformLongUiChecks;
         protected static readonly Random rnd = new Random();
 
         public static string GenerateRandomString(int max)

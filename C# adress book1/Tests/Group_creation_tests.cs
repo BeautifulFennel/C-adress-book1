@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class Group_creation_tests : AuthTestBase
+    public class Group_creation_tests : GroupTestBase
     {
         public static IEnumerable<GroupData> GroupDataFromXmlFile()
         {
@@ -30,18 +30,16 @@ namespace addressbook_tests
         {
             app.Navigator.OpenGroupsPage();
 
-            List<GroupData> oldGroups = app.Groups.GetGroupList();
+            List<GroupData> oldGroups = GroupData.GetAll();
 
             app.Groups.Create(group);
 
             NUnit.Framework.Assert.That(app.Groups.GetGroupCount(), Is.EqualTo(oldGroups.Count + 1));
 
-            List<GroupData> newGroups = app.Groups.GetGroupList();
+            List<GroupData> newGroups = GroupData.GetAll();
+            group.Id = newGroups.Single(g => oldGroups.All(old => old.Id != g.Id)).Id;
             oldGroups.Add(group);
-            oldGroups.Sort();
-            newGroups.Sort();
-
-            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
+            AssertGroupsEqual(newGroups, oldGroups);
         }
 
         [Test]
@@ -55,18 +53,16 @@ namespace addressbook_tests
 
             app.Navigator.OpenGroupsPage();
 
-            List<GroupData> oldGroups = app.Groups.GetGroupList();
+            List<GroupData> oldGroups = GroupData.GetAll();
 
             app.Groups.Create(group);
 
             NUnit.Framework.Assert.That(app.Groups.GetGroupCount(), Is.EqualTo(oldGroups.Count + 1));
 
-            List<GroupData> newGroups = app.Groups.GetGroupList();
+            List<GroupData> newGroups = GroupData.GetAll();
+            group.Id = newGroups.Single(g => oldGroups.All(old => old.Id != g.Id)).Id;
             oldGroups.Add(group);
-            oldGroups.Sort();
-            newGroups.Sort();
-
-            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
+            AssertGroupsEqual(newGroups, oldGroups);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactCreationTests : AuthTestBase
+    public class ContactCreationTests : ContactTestBase
     {
         public static IEnumerable<ContactData> ContactDataFromXmlFile()
         {
@@ -30,18 +30,16 @@ namespace addressbook_tests
         {
             app.Navigator.OpenHomePage();
 
-            List<ContactData> oldContacts = app.Contacts.GetContactList();
+            List<ContactData> oldContacts = ContactData.GetAll();
 
             app.Contacts.Create(contact);
 
             NUnit.Framework.Assert.That(app.Contacts.GetContactCount(), Is.EqualTo(oldContacts.Count + 1));
 
-            List<ContactData> newContacts = app.Contacts.GetContactList();
+            List<ContactData> newContacts = ContactData.GetAll();
+            contact.Id = newContacts.Single(c => oldContacts.All(old => old.Id != c.Id)).Id;
             oldContacts.Add(contact);
-            oldContacts.Sort();
-            newContacts.Sort();
-
-            NUnit.Framework.Assert.That(newContacts, Is.EqualTo(oldContacts));
+            AssertContactsEqual(newContacts, oldContacts);
         }
     }
 }

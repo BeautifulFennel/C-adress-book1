@@ -1,9 +1,11 @@
 using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
+using LinqToDB.Mapping;
 
 namespace addressbook_tests
 {
+    [Table(Name = "addressbook")]
     public class ContactData : IEquatable<ContactData>, IComparable<ContactData>
     {
         private string? allPhones;
@@ -20,32 +22,53 @@ namespace addressbook_tests
             LastName = lastName;
         }
 
+        [Column(Name = "id"), PrimaryKey, Identity]
+        public string? Id { get; set; }
+
+        [Column(Name = "deprecated")]
+        [JsonIgnore, XmlIgnore]
+        public DateTime? Deprecated { get; set; }
+
+        [Column(Name = "firstname")]
         public string FirstName { get; set; }
 
+        [Column(Name = "middlename")]
         public string MiddleName { get; set; } = "";
 
+        [Column(Name = "lastname")]
         public string LastName { get; set; }
 
+        [Column(Name = "nickname")]
         public string Nickname { get; set; } = "";
 
+        [Column(Name = "title")]
         public string Title { get; set; } = "";
 
+        [Column(Name = "company")]
         public string Company { get; set; } = "";
 
+        [Column(Name = "address")]
         public string Address { get; set; } = "";
 
+        [Column(Name = "home")]
         public string HomePhone { get; set; } = "";
 
+        [Column(Name = "mobile")]
         public string MobilePhone { get; set; } = "";
 
+        [Column(Name = "work")]
         public string WorkPhone { get; set; } = "";
 
+        [Column(Name = "email")]
         public string Email { get; set; } = "";
 
+        [Column(Name = "email2")]
         public string Email2 { get; set; } = "";
 
+        [Column(Name = "email3")]
         public string Email3 { get; set; } = "";
 
+        [Column(Name = "homepage")]
         public string Homepage { get; set; } = "";
 
         // Из таблицы получаем готовую строку, из формы — собираем её из отдельных полей.
@@ -89,17 +112,32 @@ namespace addressbook_tests
                 .Replace(".", "").Replace("/", "").Replace("'", "");
         }
 
+        [Column(Name = "bday")]
         public string BirthDay { get; set; } = "-";
 
+        [Column(Name = "bmonth")]
         public string BirthMonth { get; set; } = "-";
 
+        [Column(Name = "byear")]
         public string BirthYear { get; set; } = "";
 
+        [Column(Name = "aday")]
         public string AnniversaryDay { get; set; } = "-";
 
+        [Column(Name = "amonth")]
         public string AnniversaryMonth { get; set; } = "-";
 
+        [Column(Name = "ayear")]
         public string AnniversaryYear { get; set; } = "";
+
+        public static List<ContactData> GetAll()
+        {
+            using AdressBookDB db = new AdressBookDB();
+            // Address Book помечает удалённые контакты датой в deprecated.
+            return (from contact in db.Contacts
+                    where contact.Deprecated == null
+                    select contact).ToList();
+        }
 
         // Обратная проверка: собираем текст страницы свойств из отдельных полей формы.
         public string GetAllDetails(DateTime today)

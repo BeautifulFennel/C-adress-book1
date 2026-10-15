@@ -27,6 +27,14 @@ namespace addressbook_tests
             }
         }
 
+        protected void ClickInView(IWebElement element)
+        {
+            // После выбора записи по Id нужный элемент может быть за пределами окна.
+            ((IJavaScriptExecutor)driver).ExecuteScript(
+                "arguments[0].scrollIntoView({block: 'center', inline: 'center'});", element);
+            element.Click();
+        }
+
         public bool IsAlertPresent()
         {
             try

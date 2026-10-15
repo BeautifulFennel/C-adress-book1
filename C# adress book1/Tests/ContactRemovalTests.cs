@@ -3,14 +3,14 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactRemovalTests : AuthTestBase
+    public class ContactRemovalTests : ContactTestBase
     {
         [Test]
         public void ContactRemovalTest()
         {
             app.Navigator.OpenHomePage();
 
-            if (!app.Contacts.IsThereAContact())
+            if (ContactData.GetAll().Count == 0)
             {
                 app.Contacts.Create(new ContactData("Contact", "For removal")
                 {
@@ -20,18 +20,15 @@ namespace addressbook_tests
             }
 
             const int index = 0;
-            List<ContactData> oldContacts = app.Contacts.GetContactList();
+            List<ContactData> oldContacts = ContactData.GetAll();
 
-            app.Contacts.Remove(index);
+            app.Contacts.Remove(oldContacts[index].Id!);
 
             NUnit.Framework.Assert.That(app.Contacts.GetContactCount(), Is.EqualTo(oldContacts.Count - 1));
 
-            List<ContactData> newContacts = app.Contacts.GetContactList();
+            List<ContactData> newContacts = ContactData.GetAll();
             oldContacts.RemoveAt(index);
-            oldContacts.Sort();
-            newContacts.Sort();
-
-            NUnit.Framework.Assert.That(newContacts, Is.EqualTo(oldContacts));
+            AssertContactsEqual(newContacts, oldContacts);
         }
     }
 }

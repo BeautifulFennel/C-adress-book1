@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class GroupModificationTests : AuthTestBase
+    public class GroupModificationTests : GroupTestBase
     {
         [Test]
         public void GroupModificationTest()
@@ -16,27 +16,25 @@ namespace addressbook_tests
 
             app.Navigator.OpenGroupsPage();
 
-            if (!app.Groups.IsThereAGroup())
+            if (GroupData.GetAll().Count == 0)
             {
                 app.Groups.Create(new GroupData("group for modification"));
             }
 
             const int index = 0;
-            List<GroupData> oldGroups = app.Groups.GetGroupList();
-            // Сохраняем Id до изменения ожидаемого списка и его сортировки.
+            List<GroupData> oldGroups = GroupData.GetAll();
+            // Сохраняем Id выбранной из БД группы для изменения через UI.
             string? modifiedGroupId = oldGroups[index].Id;
             NUnit.Framework.Assert.That(modifiedGroupId, Is.Not.Null.And.Not.Empty);
 
-            app.Groups.Modify(index, group);
+            app.Groups.Modify(modifiedGroupId!, group);
 
             NUnit.Framework.Assert.That(app.Groups.GetGroupCount(), Is.EqualTo(oldGroups.Count));
 
-            List<GroupData> newGroups = app.Groups.GetGroupList();
-            oldGroups[index].Name = group.Name;
-            oldGroups.Sort();
-            newGroups.Sort();
-
-            NUnit.Framework.Assert.That(newGroups, Is.EqualTo(oldGroups));
+            List<GroupData> newGroups = GroupData.GetAll();
+            group.Id = modifiedGroupId;
+            oldGroups[index] = group;
+            AssertGroupsEqual(newGroups, oldGroups);
 
             GroupData? modifiedGroup = newGroups.Find(item => item.Id == modifiedGroupId);
             NUnit.Framework.Assert.That(modifiedGroup, Is.Not.Null,

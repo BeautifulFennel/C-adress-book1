@@ -42,6 +42,7 @@ namespace addressbook_tests
         {
             ContactData original = new ContactData("Иван <&>", "Last \"name\"")
             {
+                Id = "456",
                 MiddleName = "Middle",
                 Nickname = "Tester",
                 Title = "Engineer",
@@ -69,6 +70,7 @@ namespace addressbook_tests
 
             NUnit.Framework.Assert.Multiple(() =>
             {
+                NUnit.Framework.Assert.That(restored.Id, Is.EqualTo(original.Id));
                 NUnit.Framework.Assert.That(restored.GetAllDetails(today), Is.EqualTo(original.GetAllDetails(today)));
                 NUnit.Framework.Assert.That(restored.Homepage, Is.EqualTo(original.Homepage));
                 NUnit.Framework.Assert.That(restored.AllPhones, Is.EqualTo("+73831234567\n222\n333"));

@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactModificationTests : AuthTestBase
+    public class ContactModificationTests : ContactTestBase
     {
         [Test]
         public void ContactModificationTest()
@@ -20,7 +20,7 @@ namespace addressbook_tests
 
             app.Navigator.OpenHomePage();
 
-            if (!app.Contacts.IsThereAContact())
+            if (ContactData.GetAll().Count == 0)
             {
                 app.Contacts.Create(new ContactData("Contact", "For modification")
                 {
@@ -30,18 +30,16 @@ namespace addressbook_tests
             }
 
             const int index = 0;
-            List<ContactData> oldContacts = app.Contacts.GetContactList();
+            List<ContactData> oldContacts = ContactData.GetAll();
+            contact.Id = oldContacts[index].Id;
 
-            app.Contacts.Modify(index, contact);
+            app.Contacts.Modify(contact.Id!, contact);
 
             NUnit.Framework.Assert.That(app.Contacts.GetContactCount(), Is.EqualTo(oldContacts.Count));
 
-            List<ContactData> newContacts = app.Contacts.GetContactList();
+            List<ContactData> newContacts = ContactData.GetAll();
             oldContacts[index] = contact;
-            oldContacts.Sort();
-            newContacts.Sort();
-
-            NUnit.Framework.Assert.That(newContacts, Is.EqualTo(oldContacts));
+            AssertContactsEqual(newContacts, oldContacts);
         }
     }
 }

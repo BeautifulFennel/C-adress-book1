@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace addressbook_tests
 {
     [TestFixture]
-    public class ContactInformationTests : AuthTestBase
+    public class ContactInformationTests : ContactTestBase
     {
         [Test]
         [Description("Задание №12: страница свойств контакта и форма редактирования")]
@@ -11,7 +11,7 @@ namespace addressbook_tests
         {
             app.Navigator.OpenHomePage();
 
-            if (!app.Contacts.IsThereAContact())
+            if (ContactData.GetAll().Count == 0)
             {
                 app.Contacts.Create(new ContactData("Contact", "For details check")
                 {
@@ -36,9 +36,9 @@ namespace addressbook_tests
                 });
             }
 
-            const int index = 0;
-            ContactData fromForm = app.Contacts.GetContactInformationFromEditForm(index);
-            string fromDetails = app.Contacts.GetContactInformationFromDetails(index);
+            string id = ContactData.GetAll()[0].Id!;
+            ContactData fromForm = app.Contacts.GetContactInformationFromEditForm(id);
+            string fromDetails = app.Contacts.GetContactInformationFromDetails(id);
             app.Navigator.OpenHomePage();
 
             // Собираем ожидаемый блок из формы, а не разбираем текст страницы на поля.
@@ -53,7 +53,7 @@ namespace addressbook_tests
         {
             app.Navigator.OpenHomePage();
 
-            if (!app.Contacts.IsThereAContact())
+            if (ContactData.GetAll().Count == 0)
             {
                 app.Contacts.Create(new ContactData("Contact", "For information check")
                 {
@@ -69,9 +69,9 @@ namespace addressbook_tests
                 });
             }
 
-            const int index = 0;
-            ContactData fromTable = app.Contacts.GetContactInformationFromTable(index);
-            ContactData fromForm = app.Contacts.GetContactInformationFromEditForm(index);
+            string id = ContactData.GetAll()[0].Id!;
+            ContactData fromTable = app.Contacts.GetContactInformationFromTable(id);
+            ContactData fromForm = app.Contacts.GetContactInformationFromEditForm(id);
             app.Navigator.OpenHomePage();
 
             // Обратная проверка: превращаем поля формы в ожидаемое представление таблицы.

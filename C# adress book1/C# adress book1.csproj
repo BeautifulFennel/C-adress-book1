@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="linq2db" Version="6.4.0" />
+    <PackageReference Include="MySqlConnector" Version="2.6.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
@@ -24,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="App.config" CopyToOutputDirectory="PreserveNewest" />
     <!-- Данные созданы генератором №14. NUnit ищет их рядом с тестовой сборкой. -->
     <None Include="../TestData/*.xml;../TestData/*.json"
           Link="TestData/%(Filename)%(Extension)"

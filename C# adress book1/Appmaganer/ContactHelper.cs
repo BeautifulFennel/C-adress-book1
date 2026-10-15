@@ -30,9 +30,34 @@ namespace addressbook_tests
             return this;
         }
 
+        public ContactHelper Modify(string id, ContactData contact)
+        {
+            manager.Navigator.OpenHomePage();
+            InitContactModification(id);
+            FillContactForm(contact);
+            SubmitContactModification();
+            manager.Navigator.ReturnToHomePage();
+            return this;
+        }
+
         public ContactHelper Remove(int index)
         {
             SelectContact(index);
+            RemoveSelectedContacts();
+
+            if (IsAlertPresent())
+            {
+                CloseAlertAndGetItsText();
+            }
+
+            manager.Navigator.OpenHomePage();
+            return this;
+        }
+
+        public ContactHelper Remove(string id)
+        {
+            manager.Navigator.OpenHomePage();
+            SelectContact(id);
             RemoveSelectedContacts();
 
             if (IsAlertPresent())
@@ -54,8 +79,15 @@ namespace addressbook_tests
             return driver.FindElements(By.Name("selected[]")).Count;
         }
 
-        public List<ContactData> GetContactList()
+        public List<ContactData> GetContactList(bool forceReload = false)
         {
+            if (forceReload)
+            {
+                contactCache = null;
+                manager.Navigator.OpenHomePage();
+                driver.Navigate().Refresh();
+            }
+
             if (contactCache == null)
             {
                 contactCache = new List<ContactData>();
@@ -68,7 +100,13 @@ namespace addressbook_tests
 
                     contactCache.Add(new ContactData(
                         cellArray[2].Text,
-                        cellArray[1].Text));
+                        cellArray[1].Text)
+                    {
+                        Id = row.FindElement(By.Name("selected[]")).GetAttribute("value"),
+                        Address = NormalizeLineEndings(cellArray[3].Text),
+                        AllEmails = NormalizeLineEndings(cellArray[4].Text),
+                        AllPhones = NormalizeLineEndings(cellArray[5].Text)
+                    });
                 }
 
             }
@@ -76,29 +114,31 @@ namespace addressbook_tests
             return new List<ContactData>(contactCache);
         }
 
-        public ContactData GetContactInformationFromTable(int index)
+        public ContactData GetContactInformationFromTable(string id)
         {
             manager.Navigator.OpenHomePage();
-            IWebElement row = driver.FindElements(By.Name("entry"))[index];
+            IWebElement row = GetContactRow(id);
             IWebElement[] cells = row.FindElements(By.TagName("td")).ToArray();
 
             return new ContactData(cells[2].Text, cells[1].Text)
             {
+                Id = id,
                 Address = NormalizeLineEndings(cells[3].Text),
                 AllEmails = NormalizeLineEndings(cells[4].Text),
                 AllPhones = NormalizeLineEndings(cells[5].Text)
             };
         }
 
-        public ContactData GetContactInformationFromEditForm(int index)
+        public ContactData GetContactInformationFromEditForm(string id)
         {
             manager.Navigator.OpenHomePage();
-            InitContactModification(index);
+            InitContactModification(id);
 
             return new ContactData(
                 driver.FindElement(By.Name("firstname")).GetAttribute("value") ?? "",
                 driver.FindElement(By.Name("lastname")).GetAttribute("value") ?? "")
             {
+                Id = id,
                 MiddleName = driver.FindElement(By.Name("middlename")).GetAttribute("value") ?? "",
                 Nickname = driver.FindElement(By.Name("nickname")).GetAttribute("value") ?? "",
                 Title = driver.FindElement(By.Name("title")).GetAttribute("value") ?? "",
@@ -121,12 +161,12 @@ namespace addressbook_tests
             };
         }
 
-        public string GetContactInformationFromDetails(int index)
+        public string GetContactInformationFromDetails(string id)
         {
             manager.Navigator.OpenHomePage();
-            IWebElement[] cells = driver.FindElements(By.Name("entry"))[index]
+            IWebElement[] cells = GetContactRow(id)
                 .FindElements(By.TagName("td")).ToArray();
-            cells[6].FindElement(By.TagName("a")).Click();
+            ClickInView(cells[6].FindElement(By.TagName("a")));
 
             return NormalizeLineEndings(driver.FindElement(By.Id("content")).Text);
         }
@@ -208,6 +248,19 @@ namespace addressbook_tests
             cells[7].FindElement(By.TagName("a")).Click();
         }
 
+        public void InitContactModification(string id)
+        {
+            ClickInView(GetContactRow(id).FindElements(By.TagName("td"))[7]
+                .FindElement(By.TagName("a")));
+        }
+
+        private IWebElement GetContactRow(string id)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(id);
+            return driver.FindElement(By.XPath(
+                $"//tr[@name='entry'][.//input[@name='selected[]' and @value='{id}']]"));
+        }
+
         public void SubmitContactModification()
         {
             driver.FindElement(By.Name("update")).Click();
@@ -219,9 +272,17 @@ namespace addressbook_tests
             driver.FindElements(By.Name("selected[]"))[index].Click();
         }
 
+        public void SelectContact(string id)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(id);
+            IWebElement checkbox = driver.FindElement(
+                By.CssSelector($"input[name='selected[]'][value='{id}']"));
+            ClickInView(checkbox);
+        }
+
         public void RemoveSelectedContacts()
         {
-            driver.FindElement(By.Name("delete")).Click();
+            ClickInView(driver.FindElement(By.Name("delete")));
             contactCache = null;
         }
     }
