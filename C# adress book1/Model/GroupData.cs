@@ -40,7 +40,7 @@ namespace addressbook_tests
             return (from contact in db.Contacts
                     from relation in db.GCR
                     where relation.GroupId == Id && relation.ContactId == contact.Id
-                        && contact.Deprecated == null
+                        && (contact.Deprecated == null || contact.Deprecated == "0000-00-00 00:00:00")
                     select contact).Distinct().ToList();
         }
 

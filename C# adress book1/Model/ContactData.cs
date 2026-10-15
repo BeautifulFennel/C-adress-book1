@@ -27,7 +27,7 @@ namespace addressbook_tests
 
         [Column(Name = "deprecated")]
         [JsonIgnore, XmlIgnore]
-        public DateTime? Deprecated { get; set; }
+        public string? Deprecated { get; set; }
 
         [Column(Name = "firstname")]
         public string FirstName { get; set; }
@@ -133,9 +133,10 @@ namespace addressbook_tests
         public static List<ContactData> GetAll()
         {
             using AdressBookDB db = new AdressBookDB();
-            // Address Book помечает удалённые контакты датой в deprecated.
+            // В старых версиях активная запись имеет нулевую дату, в новых — NULL.
+            // Дата удаления также отмечает старую версию изменённого контакта.
             return (from contact in db.Contacts
-                    where contact.Deprecated == null
+                    where contact.Deprecated == null || contact.Deprecated == "0000-00-00 00:00:00"
                     select contact).ToList();
         }
 

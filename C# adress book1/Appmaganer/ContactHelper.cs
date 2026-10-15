@@ -69,6 +69,57 @@ namespace addressbook_tests
             return this;
         }
 
+        public ContactHelper AddContactToGroup(ContactData contact, GroupData group)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(group.Id);
+            manager.Navigator.OpenHomePage();
+            ClearGroupFilter();
+            SelectContact(contact.Id!);
+            // Названия могут совпадать или быть пустыми, поэтому выбираем по Id.
+            IWebElement groupList = driver.FindElement(By.Name("to_group"));
+            ScrollIntoView(groupList);
+            new SelectElement(groupList).SelectByValue(group.Id);
+            ClickInView(driver.FindElement(By.Name("add")));
+            WaitForGroupOperation();
+            return this;
+        }
+
+        public ContactHelper RemoveContactFromGroup(ContactData contact, GroupData group)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(group.Id);
+            manager.Navigator.OpenHomePage();
+            SelectGroupFilter(group.Id);
+            SelectContact(contact.Id!);
+            ClickInView(driver.FindElement(By.Name("remove")));
+            WaitForGroupOperation();
+            return this;
+        }
+
+        public void ClearGroupFilter()
+        {
+            SelectGroupFilter("");
+        }
+
+        private void SelectGroupFilter(string groupId)
+        {
+            IWebElement groupList = driver.FindElement(By.CssSelector("select[name='group']"));
+            ScrollIntoView(groupList);
+            new SelectElement(groupList).SelectByValue(groupId);
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d =>
+                d.FindElements(By.Id("maintable")).Count > 0
+                // После перезагрузки выбранный option содержит имя вместо Id.
+                // Применённый Id хранится в скрытом поле формы контактов.
+                && d.FindElement(By.CssSelector("form[name='MainForm'] input[name='group']"))
+                    .GetAttribute("value") == groupId);
+        }
+
+        private void WaitForGroupOperation()
+        {
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d =>
+                d.FindElements(By.CssSelector("div.msgbox")).Any(message => message.Displayed));
+            contactCache = null;
+        }
+
         public bool IsThereAContact()
         {
             return IsElementPresent(By.Name("selected[]"));

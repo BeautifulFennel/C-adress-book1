@@ -43,6 +43,18 @@ namespace addressbook_tests
 
             // Собираем ожидаемый блок из формы, а не разбираем текст страницы на поля.
             string expectedDetails = fromForm.GetAllDetails(DateTime.Today);
+            using AdressBookDB db = new AdressBookDB();
+            List<string> groupNames = (from relation in db.GCR
+                                      join g in db.Groups on relation.GroupId equals g.Id
+                                      where relation.ContactId == id
+                                      orderby g.Id
+                                      select g.Name).ToList();
+            if (groupNames.Count > 0)
+            {
+                // На странице свойств после полей контакта выводится его членство.
+                expectedDetails += "\n\n" + ("Member of: " + string.Join(", ", groupNames)).TrimEnd();
+            }
+
             NUnit.Framework.Assert.That(fromDetails,
                 Is.EqualTo(expectedDetails), "Детальная информация о контакте, включая пробелы и переносы строк");
         }
