@@ -2,6 +2,14 @@
 
 Учебное решение с UI-автотестами для Address Book. Веб-тесты запускают Firefox через Selenium WebDriver и проверяют авторизацию, а также основные операции с группами и контактами. Отдельный проект `AddressBook.DesktopTests` проверяет группы в Windows-приложении через White.
 
+## Задание №20 — MantisBT
+
+Добавлен отдельный проект [Mantis.Tests](Mantis.Tests/README.md) с тестами создания и удаления проектов в MantisBT, типовой архитектурой `TestBase → ApplicationManager → Helpers` и моделями данных. Подготовка локального стенда и инструкции запуска описаны в README проекта.
+
+```powershell
+dotnet test ".\Mantis.Tests\Mantis.Tests.csproj"
+```
+
 ## Задание №18 — Windows Address Book
 
 Создан самостоятельный проект [AddressBook.DesktopTests](AddressBook.DesktopTests/README.md) на .NET Framework 4.8, TestStack.White и NUnit. В нём есть тесты добавления и удаления групп, `TestBase`, `ApplicationManager`, `HelperBase`, `GroupHelper` и модель `GroupData`. Каждый тест работает с собственной копией portable-приложения и MDB. Проверяются количество и полный состав групп.
@@ -121,6 +129,16 @@ C# adress book1/
 ## История версий
 
 Отдельные Git-теги в репозитории пока не используются, поэтому версии ниже соответствуют учебным выкладкам-коммитам. Новые записи следует добавлять в начало раздела.
+
+### 2026-10-21 — Homework №20
+
+- добавлен самостоятельный проект `Mantis.Tests` с тестами создания и удаления проектов MantisBT;
+- реализованы `TestBase`, `ApplicationManager`, `HelperBase`, `LoginHelper`, `ManagementMenuHelper`, `ProjectManagementHelper` и модели данных;
+- проверяются количество, полный состав проектов и сохранённые поля; тест удаления сохраняет контрольный проект;
+- настроены уникальные данные, очистка, скриншоты ошибок и параметры окружения;
+- подготовлен локальный MantisBT 2.28.4 с отдельной базой `mantis_hw20`, добавлены скрипт запуска и инструкция.
+
+Проверка: отдельное решение собрано без ошибок и предупреждений; все 3 UI-теста прошли на MantisBT 2.28.4 в Firefox headless. Тестовые проекты удалены после прогона.
 
 ### 2026-10-19 — Homework №18
 

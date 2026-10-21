@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="AddressBook.DesktopTests/AddressBook.DesktopTests.csproj" />
   <Project Path="C# adress book1/C# adress book1.csproj" />
+  <Project Path="Mantis.Tests/Mantis.Tests.csproj" />
   <Project Path="TestDataGenerator/TestDataGenerator.csproj" />
 </Solution>
