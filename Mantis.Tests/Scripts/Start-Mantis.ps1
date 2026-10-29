@@ -45,7 +45,13 @@ catch [System.Net.WebException] {
     }
 }
 
-$arguments = @(
+$soapEnabled = (& $PhpPath -m) -contains 'soap'
+$arguments = @()
+if (-not $soapEnabled) {
+    # Enable SOAP for this server process without changing the global php.ini.
+    $arguments += @('-d', 'extension=soap')
+}
+$arguments += @(
     '-d', ('"session.save_path=' + $sessionDirectory + '"'),
     '-S', "127.0.0.1:$Port",
     '-t', ('"' + $MantisPath + '"')

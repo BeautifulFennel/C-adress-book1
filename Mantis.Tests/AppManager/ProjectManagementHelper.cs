@@ -15,7 +15,7 @@ public sealed class ProjectManagementHelper : HelperBase
     public ProjectData Create(ProjectData project)
     {
         manager.ManagementMenu.OpenProjects();
-        List<ProjectData> before = ReadProjectList();
+        List<ProjectData> before = GetProjectList();
         Click(By.CssSelector("form[action$='manage_proj_create_page.php'] input[type='submit'], form[action$='manage_proj_create_page.php'] button"));
         FillProjectForm(project);
         Click(CreateSubmit);
@@ -38,13 +38,12 @@ public sealed class ProjectManagementHelper : HelperBase
         Click(By.CssSelector("form:has(input[name='_confirmed']) input[type='submit'], form:has(input[name='_confirmed']) button"));
         WaitForOperationResult("manage_proj_delete.php");
         manager.ManagementMenu.OpenProjects();
-        wait.Until(_ => ReadProjectList().All(project => project.Id != projectId));
+        wait.Until(_ => GetProjectList().All(project => project.Id != projectId));
     }
 
     public List<ProjectData> GetProjectList()
     {
-        manager.ManagementMenu.OpenProjects();
-        return ReadProjectList();
+        return manager.API.GetProjectList();
     }
 
     public ProjectData GetProject(int projectId)
@@ -61,14 +60,6 @@ public sealed class ProjectManagementHelper : HelperBase
     {
         Type(By.Name("name"), project.Name);
         Type(By.Name("description"), project.Description);
-    }
-
-    private List<ProjectData> ReadProjectList()
-    {
-        return driver.FindElements(ProjectLinks)
-            .Select(element => new ProjectData(element.Text.Trim()) { Id = ParseId(element) })
-            .DistinctBy(project => project.Id)
-            .ToList();
     }
 
     private static int ParseId(IWebElement link)

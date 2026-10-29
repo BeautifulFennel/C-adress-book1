@@ -2,9 +2,9 @@
 
 Учебное решение с UI-автотестами для Address Book. Веб-тесты запускают Firefox через Selenium WebDriver и проверяют авторизацию, а также основные операции с группами и контактами. Отдельный проект `AddressBook.DesktopTests` проверяет группы в Windows-приложении через White.
 
-## Задание №20 — MantisBT
+## Задания №20 и №22 — MantisBT
 
-Добавлен отдельный проект [Mantis.Tests](Mantis.Tests/README.md) с тестами создания и удаления проектов в MantisBT, типовой архитектурой `TestBase → ApplicationManager → Helpers` и моделями данных. Подготовка локального стенда и инструкции запуска описаны в README проекта.
+Добавлен отдельный проект [Mantis.Tests](Mantis.Tests/README.md) с тестами создания и удаления проектов в MantisBT, типовой архитектурой `TestBase → ApplicationManager → Helpers` и моделями данных. В задании №22 список проектов получается через MantisConnect (`mc_projects_get_user_accessible`), а тест удаления при пустом списке создаёт проект через SOAP (`mc_project_add`). Подготовка локального стенда и инструкции запуска описаны в README проекта.
 
 ```powershell
 dotnet test ".\Mantis.Tests\Mantis.Tests.csproj"

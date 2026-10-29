@@ -24,6 +24,7 @@ public sealed class ApplicationManager : IDisposable
             Driver.Manage().Window.Size = new System.Drawing.Size(1440, 1000);
             Login = new LoginHelper(this);
             ManagementMenu = new ManagementMenuHelper(this);
+            API = new APIHelper(configuration);
             Projects = new ProjectManagementHelper(this);
         }
         catch
@@ -38,6 +39,7 @@ public sealed class ApplicationManager : IDisposable
     public LoginHelper Login { get; }
     public ManagementMenuHelper ManagementMenu { get; }
     public ProjectManagementHelper Projects { get; }
+    public APIHelper API { get; }
 
     public void Dispose()
     {
@@ -47,6 +49,13 @@ public sealed class ApplicationManager : IDisposable
         }
 
         disposed = true;
-        Driver.Dispose();
+        try
+        {
+            Driver.Dispose();
+        }
+        finally
+        {
+            API.Dispose();
+        }
     }
 }
